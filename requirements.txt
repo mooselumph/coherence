@@ -1,0 +1,6 @@
+jax[cpu]
+git+https://github.com/deepmind/dm-haiku
+optax
+tensorflow-datasets
+matplotlib
+tensorflow
