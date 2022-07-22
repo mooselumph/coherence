@@ -27,7 +27,8 @@ def get_coherence(pt_grads):
     def helper(g):
         num_pts = g.shape[0]
         # return jnp.sum(g,axis=0)**2
-        return jnp.sqrt(jnp.sum(g,axis=0)**2 / jnp.sum(jnp.concatenate([g[i,:]**2 for i in range(num_pts)],axis=0),axis=0))
+        # return jnp.sqrt(jnp.sum(g,axis=0)**2 / jnp.sum(jnp.concatenate([g[i,:]**2 for i in range(num_pts)],axis=0),axis=0))
+        return jnp.abs(jnp.sum(g,axis=0)) / jnp.sum(jnp.concatenate([jnp.abs(g[i,:]) for i in range(num_pts)],axis=0),axis=0)
 
     c = jax.tree_map(helper,pt_grads)
 

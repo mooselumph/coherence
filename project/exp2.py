@@ -17,6 +17,8 @@ from coherence.coherence import ptwise, get_coherence, subnetwork_coherence
 
 from functools import partial
 
+import matplotlib.pyplot as plt
+
 # load mnist data
 train, train_eval, test_eval = get_data("mnist",batch_size=100,format_fun=normalize)
 
