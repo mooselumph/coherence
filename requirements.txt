@@ -4,3 +4,4 @@ jax[cpu]
 git+https://github.com/deepmind/dm-haiku
 optax
 matplotlib
+tqdm

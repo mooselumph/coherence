@@ -40,25 +40,31 @@ class Cnn(hk.Module):
         else:
             layers.append(ConvModule(name=f"conv_{i}",output_channels=spec,**bn_config))
 
-    layers.append(hk.Flatten())
-    layers.append(hk.Linear(output_size=output_size))
-    
+    self.plan = plan
     self.layers = layers
 
-  def __call__(self, x, output_intermediate=False):
+    self.fc = hk.Linear(output_size=output_size)
+    
+
+  def __call__(self, x, is_training=True, test_local_stats=False, output_intermediate=False):
 
     if output_intermediate:
       outputs = []
 
-    x = hk.Flatten()(x)
-
-    for i, layer in enumerate(self.layers):
-      x = layer(x)
+    for spec, layer in zip(self.plan,self.layers):
+      if spec == 'M':
+        x = layer(x)
+      else:
+        x = layer(x,is_training=is_training,test_local_stats=test_local_stats)
 
       if output_intermediate:
         outputs.append(x)
 
+    x = hk.Flatten()(x)
+    x = self.fc(x)
+
     if output_intermediate:
+      outputs.append(x)
       return outputs
     
     return x
