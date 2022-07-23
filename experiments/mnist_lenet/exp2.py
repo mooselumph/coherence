@@ -1,5 +1,5 @@
 from typing import Tuple
-from custom_types import Batch
+from coherence.custom_types import Batch
 
 import jax
 import jax.numpy as jnp
@@ -7,11 +7,11 @@ import jax.numpy as jnp
 import haiku as hk
 import optax
 
-from data import get_data, decimate, normalize
-from train import network_and_loss, do_training, update_params, net_accuracy
-from models.models import lenet_fn
+from coherence.data import get_data, decimate, normalize
+from coherence.train import network_and_loss, do_training, update_params, net_accuracy
+from coherence.models.mlp import lenet_fn
 
-from pruning.pruning import masked_update, imp, threshold_prune
+from coherence.pruning import masked_update, imp, threshold_prune
 
 from coherence.coherence import ptwise, get_coherence, subnetwork_coherence
 

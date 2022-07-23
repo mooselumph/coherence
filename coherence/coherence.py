@@ -2,7 +2,7 @@ import jax
 import jax.numpy as jnp
 from numpy import ravel
 
-from utils import ravel_pytree
+from ..utils import ravel_pytree
 
 def ptwise(loss_fn):
     """

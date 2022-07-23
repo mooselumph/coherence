@@ -1,4 +1,4 @@
-from custom_types import Batch
+from .custom_types import Batch
 from typing import Generator
 
 import numpy as np

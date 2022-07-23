@@ -1,5 +1,5 @@
 from typing import Tuple
-from custom_types import Batch
+from .custom_types import Batch
 
 import jax
 import jax.numpy as jnp

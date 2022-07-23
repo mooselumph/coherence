@@ -1,9 +1,9 @@
 import jax
 import optax
 
-from data import get_data, decimate, normalize
-from train import network_and_loss, do_training, update_params, net_accuracy
-from models.models import lenet_fn
+from coherence.data import get_data, decimate, normalize
+from coherence.train import network_and_loss, do_training, update_params, net_accuracy
+from coherence.models.mlp import lenet_fn
 
 # load mnist data
 train, train_eval, test_eval = get_data("mnist",batch_size=20,format_fun=normalize)

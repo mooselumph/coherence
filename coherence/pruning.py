@@ -1,5 +1,5 @@
 from typing import Tuple
-from custom_types import Batch
+from ..custom_types import Batch
 
 import jax
 import optax
@@ -9,9 +9,9 @@ import jax.numpy as jnp
 
 from operator import mul
 
-from train import update_params
+from ..train import update_params
 
-from utils import ravel_pytree
+from ..utils import ravel_pytree
 
 def init_mask(params):
     def to_true(w):
