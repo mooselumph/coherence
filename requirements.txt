@@ -1,7 +1,9 @@
-tensorflow-datasets
-tensorflow
-jax[cpu]
-git+https://github.com/deepmind/dm-haiku
-optax
-matplotlib
-tqdm
+# tensorflow-datasets
+# tensorflow
+# jax[cpu]
+# git+https://github.com/deepmind/dm-haiku
+# optax
+# matplotlib
+# tqdm
+
+-e .

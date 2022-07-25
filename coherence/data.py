@@ -8,9 +8,9 @@ import tensorflow as tf
 import os
 
 def load_dataset(dataset: str, split: str, is_training: bool, 
-                 batch_size: int, format_fun=None) -> Generator[Batch, None, None]:
+                 batch_size: int, data_dir: str = '~/tensorflow_datasets', format_fun=None) -> Generator[Batch, None, None]:
 
-    data_dir = os.path.expanduser('~/tensorflow_datasets')
+    data_dir = os.path.expanduser(data_dir)
 
     if dataset == "cifar10":
         ds = tfds.load("cifar10", split=split, data_dir=data_dir).repeat()
@@ -27,10 +27,10 @@ def load_dataset(dataset: str, split: str, is_training: bool,
     ds = ds.batch(batch_size)
     return iter(tfds.as_numpy(ds))
 
-def get_data(dset="mnist", batch_size=1000,format_fun=None):
-    train = load_dataset(dset, "train", True, batch_size, format_fun)
-    train_eval = load_dataset(dset, "train", False, batch_size, format_fun)
-    test_eval = load_dataset(dset, "test", False, batch_size, format_fun)
+def get_data(dset="mnist", batch_size=1000,data_dir='~/tensorflow_datasets',format_fun=None):
+    train = load_dataset(dset, "train", True, batch_size, data_dir, format_fun)
+    train_eval = load_dataset(dset, "train", False, batch_size, data_dir, format_fun)
+    test_eval = load_dataset(dset, "test", False, batch_size, data_dir, format_fun)
     return train, train_eval, test_eval
 
 def sanitize(d):
