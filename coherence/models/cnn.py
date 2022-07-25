@@ -1,5 +1,4 @@
 
-from curses import window
 import haiku as hk
 import jax 
 

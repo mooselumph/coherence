@@ -8,9 +8,9 @@ setup(
     packages=['coherence'],
     install_requires=[
         'tensorflow',
-        'tesnforflow_datasets',
+        'tensorflow-datasets',
         'jax[cpu]',
-        'git+https://github.com/deepmind/dm-haiku',
+        'dm-haiku @ git+https://github.com/deepmind/dm-haiku#egg=dm-haiku',
         'optax',
         'matplotlib',
         'tqdm',

@@ -2,7 +2,25 @@ import jax
 import jax.numpy as jnp
 from numpy import ravel
 
-from ..utils import ravel_pytree
+from .utils import ravel_pytree
+
+def ptwise_with_state(loss_fn):
+    """
+    Params:
+        loss_fn: function(params, batch) --> loss 
+    
+    Returns:
+        function(params, batch) --> pointwise gradients
+    
+    """
+    
+    def helper(params, state, batch):
+        batch['image'] = jnp.expand_dims(batch['image'], axis=0)
+        batch['label'] = jnp.expand_dims(batch['label'], axis=0)
+        return jax.grad(loss_fn, has_aux=True)(params, state, batch)
+    
+    return jax.jit(jax.vmap(helper, in_axes=(None, None, 0), out_axes=0))
+
 
 def ptwise(loss_fn):
     """

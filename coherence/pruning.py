@@ -1,5 +1,5 @@
 from typing import Tuple
-from ..custom_types import Batch
+from .custom_types import Batch
 
 import jax
 import optax
@@ -9,9 +9,10 @@ import jax.numpy as jnp
 
 from operator import mul
 
-from ..train import update_params
+from .train import update_params
+from .train_with_state import update_params as update_params_with_state
 
-from ..utils import ravel_pytree
+from .utils import ravel_pytree
 
 def init_mask(params):
     def to_true(w):
@@ -35,6 +36,22 @@ def masked_update(opt,loss_fn,mask):
         new_params, opt_state = update_fn(params, opt_state, batch)
         new_params = apply_mask(new_params,mask)
         return new_params, opt_state
+
+    return update
+
+def masked_update_with_state(opt,loss_fn,mask):
+    update_fn = update_params_with_state(opt,loss_fn)
+
+    @jax.jit
+    def update(
+      params: hk.Params,
+      state: hk.State,
+      opt_state: optax.OptState,
+      batch: Batch,
+    ) -> Tuple[hk.Params, optax.OptState]:
+        new_params, state, opt_state = update_fn(params, state, opt_state, batch)
+        new_params = apply_mask(new_params,mask)
+        return new_params, state, opt_state
 
     return update
 
