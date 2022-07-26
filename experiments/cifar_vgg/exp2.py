@@ -7,7 +7,7 @@ import jax.numpy as jnp
 import haiku as hk
 import optax
 
-from coherence.data import get_data, decimate, normalize, sanitize
+from coherence.data import get_data, decimate, normalize, sanitize, get_data_by_class
 from coherence.train_with_state import network_and_loss, do_training, update_params, net_accuracy
 from coherence.models.cnn import cifar_vgg_11_fn
 
@@ -15,12 +15,16 @@ from coherence.pruning import masked_update, masked_update_with_state, imp, thre
 
 from coherence.coherence import ptwise, ptwise_with_state, get_coherence, subnetwork_coherence
 
+from coherence.utils import ravel_pytree
+
 from functools import partial
 
 import matplotlib.pyplot as plt
 
 # load mnist data
 train, train_eval, test_eval = get_data("cifar10",batch_size=100,format_fun=sanitize)
+
+dsets_by_class = get_data_by_class("cifar10",batch_size=100,format_fun=sanitize)
 
 # cnn, loss, params
 net, xent_loss = network_and_loss(cifar_vgg_11_fn)
@@ -33,8 +37,9 @@ opt = optax.adam(1e-3)
 opt_state = opt.init(params)
 accuracy_fn = net_accuracy(net)
 
-cs_in = []
-cs_out = []
+cs_in = [[] for _ in range(10)]
+cs_out = [[] for _ in range(10)]
+hs = [[] for _ in range(10)]
 
 def calc_coherence(loss_fn,mask):
 
@@ -46,13 +51,19 @@ def calc_coherence(loss_fn,mask):
     ) -> Tuple[hk.Params, optax.OptState]:
 
         ptwise_fn = ptwise_with_state(loss_fn)
-        pt_grads, _ = ptwise_fn(params, state, batch)
+        
+        for ind,ds in enumerate(dsets_by_class):
 
-        c = get_coherence(pt_grads)
+            pt_grads, _ = ptwise_fn(params, state, next(ds))
+            c = get_coherence(pt_grads)
 
-        c_in, c_out= subnetwork_coherence(c, mask)
-        cs_in.append(c_in)
-        cs_out.append(c_out)
+            c_in, c_out= subnetwork_coherence(c, mask)
+            cs_in[ind].append(c_in)
+            cs_out[ind].append(c_out)
+
+            c_flat = ravel_pytree(c)
+            h = jnp.histogram(c_flat, bins=100)
+            hs[ind].append(h)
 
     return helper
     
@@ -62,7 +73,7 @@ def train_fn_mask(mask, key):
     update_fn = masked_update_with_state(opt,xent_loss,mask)
 
     # train
-    final_params = do_training(update_fn, accuracy_fn, params, state, opt_state, train, train_eval, test_eval,epochs=101)
+    final_params = do_training(update_fn, accuracy_fn, params, state, opt_state, train, train_eval, test_eval,epochs=31)
 
     return final_params
 
@@ -74,9 +85,9 @@ def train_fn_trace(mask):
                     update_fn, accuracy_fn, 
                     params, state, opt_state, 
                     train, train_eval, test_eval, 
-                    epochs=1001, 
+                    epochs=101, 
                     aux_fn=aux_fn,
-                    aux_epoch=100,
+                    aux_epoch=10,
                     )
 
     return final_params
