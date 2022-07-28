@@ -44,9 +44,7 @@ def masked_update_with_state(opt,loss_fn,mask):
 
 
 
-def imp(key,train_fn,prune_fn,params,num_reps=10):
-
-    mask = init_mask(params)
+def imp(key,train_fn,prune_fn,params,mask,num_reps=10):
 
     masks = []
     branches = []

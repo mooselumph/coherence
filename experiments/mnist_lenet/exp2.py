@@ -12,7 +12,7 @@ from coherence.train import network_and_loss, do_training, update_params, net_ac
 from coherence.models.mlp import lenet_fn
 
 from coherence.pruning.runner import masked_update, imp
-from coherence.pruning.pruning import global_threshold_prune
+from coherence.pruning.pruning import global_threshold_prune, create_plan, init_mask
 
 from coherence.coherence import ptwise, get_coherence, subnetwork_coherence
 
@@ -82,7 +82,13 @@ def train_fn_trace(mask):
     return final_params
 
 
-masks, branches = imp(key,train_fn_mask,partial(global_threshold_prune,fraction=0.95),params,num_reps=2)
+plan = create_plan(params,rules=[])
+mask = init_mask(params, plan)
+
+print(plan)
+print(mask)
+
+masks, branches = imp(key,train_fn_mask,partial(global_threshold_prune,plan=plan,fraction=0.95),params,mask,num_reps=2)
 
 train_fn_trace(masks[-1])
 

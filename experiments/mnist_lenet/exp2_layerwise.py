@@ -12,7 +12,7 @@ from coherence.train import network_and_loss, do_training, update_params, net_ac
 from coherence.models.mlp import lenet_fn
 
 from coherence.pruning.runner import masked_update, imp
-from coherence.pruning.pruning import Rule, create_layerwise_plan, layerwise_threshold_prune
+from coherence.pruning.pruning import Rule, create_plan, layerwise_threshold_prune, init_mask
 
 from coherence.coherence import ptwise, get_coherence, subnetwork_coherence
 
@@ -83,11 +83,13 @@ def train_fn_trace(mask):
 
 
 rules = [Rule('linear_2',lambda v: 1 - 2*(1 - v)),Rule('/w',1)]
-plan = create_layerwise_plan(params,rules=rules,default_value=0.95)
+plan = create_plan(params,rules=rules,default_value=0.95)
 
 print(plan)
 
-masks, branches = imp(key,train_fn_mask,partial(layerwise_threshold_prune,plan=plan),params,num_reps=1)
+mask = init_mask(params,plan)
+
+masks, branches = imp(key,train_fn_mask,partial(layerwise_threshold_prune,plan=plan),params,mask,num_reps=1)
 
 train_fn_trace(masks[-1])
 

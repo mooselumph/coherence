@@ -11,7 +11,8 @@ from coherence.data import get_data, decimate, normalize, sanitize, get_data_by_
 from coherence.train_with_state import network_and_loss, do_training, update_params, net_accuracy
 from coherence.models.cnn import cifar_vgg_11_fn
 
-from coherence.pruning import masked_update, masked_update_with_state, imp, threshold_prune
+from coherence.pruning.runner import masked_update, masked_update_with_state, imp
+from coherence.pruning.pruning import global_threshold_prune, Rule, create_plan, init_mask
 
 from coherence.coherence import ptwise, ptwise_with_state, get_coherence, subnetwork_coherence
 
@@ -92,8 +93,11 @@ def train_fn_trace(mask):
 
     return final_params
 
+rules = [Rule('/w',1),]
+plan = create_plan(params,rules=rules,default_value=0.95)
+mask = init_mask(params,plan)
 
-masks, branches = imp(key,train_fn_mask,partial(threshold_prune,fraction=0.95),params,num_reps=1)
+masks, branches = imp(key,train_fn_mask,partial(global_threshold_prune,plan=plan,fraction=0.95),params,mask,num_reps=1)
 
 train_fn_trace(masks[-1])
 
