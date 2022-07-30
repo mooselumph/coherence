@@ -82,7 +82,7 @@ def train_fn_trace(mask):
     return final_params
 
 
-rules = [Rule('linear_2',lambda v: 1 - 2*(1 - v)),Rule('/w',1)]
+rules = [Rule('linear_2',lambda v: 1 - 2*(1 - v)),Rule('/b',1)]
 plan = create_plan(params,rules=rules,default_value=0.95)
 
 print(plan)
