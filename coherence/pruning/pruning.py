@@ -121,7 +121,7 @@ def layerwise_threshold_prune(params,old_mask,plan):
         # threshold = np.partition(jnp.abs(p),num_prune)[num_prune]
         threshold = jnp.sort(jnp.abs(p))[num_prune]
 
-        return jnp.nonzero(jnp.abs(param) > threshold)
+        return jnp.flatnonzero(jnp.abs(param) > threshold)
 
     return jax.tree_map(get_mask,params, old_mask, plan)
 
@@ -142,7 +142,7 @@ def global_threshold_prune(params,old_mask,plan,fraction=0.1):
     def to_mask(param,old_mask):
         if type(old_mask) == MaskFlag and old_mask == MaskFlag.EXCLUDED:
             return MaskFlag.EXCLUDED
-        return jnp.nonzero(jnp.abs(param) > threshold)
+        return jnp.flatnonzero(jnp.abs(param) > threshold)
 
     return jax.tree_map(to_mask,params,old_mask)
 
