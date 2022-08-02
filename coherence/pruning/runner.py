@@ -6,7 +6,7 @@ import jax
 import optax
 import haiku as hk
 
-from .pruning import init_mask, apply_mask
+from . import init_mask, apply_mask
 
 from ..train import update_params
 from ..train_with_state import update_params as update_params_with_state
