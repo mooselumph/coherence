@@ -93,7 +93,7 @@ def train_fn_trace(mask):
 
     return final_params
 
-rules = [Rule('/w',1),]
+rules = [Rule('/batch_norm',1),]
 plan = create_plan(params,rules=rules,default_value=0.95)
 mask = init_mask(params,plan)
 

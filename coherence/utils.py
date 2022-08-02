@@ -9,3 +9,16 @@ def ravel_pytree_batched(pytree):
 def ravel_pytree(pytree):
     leaves, treedef = jax.tree_flatten(pytree)
     return jnp.concatenate([jnp.ravel(elt) for elt in leaves],axis=0)
+
+
+def tensor4dto2d(t):
+
+    pieces = []
+    dims = t.shape
+
+    for ind in dims[-1]:
+        slice = t[:,:,:,ind]
+        piece = slice.reshape((dims[0],dims[1]*dims[2]),order='F')
+        pieces.append(piece)
+
+    return jnp.concatenate(pieces,axis=0)
