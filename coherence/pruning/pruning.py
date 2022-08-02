@@ -12,13 +12,13 @@ def layerwise_threshold_prune(params,old_mask,plan):
     # Get unmasked parameters
     def get_mask(param, mask, plan_item):
 
-        if plan_item[0] == 1:
+        if plan_item == 1:
             return None
 
         p = get_unmasked_leaf(param,mask)
 
         num_params = len(p)
-        num_prune = jnp.ceil(plan_item[0]*num_params).astype(int)
+        num_prune = jnp.ceil(plan_item*num_params).astype(int)
         # threshold = np.partition(jnp.abs(p),num_prune)[num_prune]
         threshold = jnp.sort(jnp.abs(p))[num_prune]
 
@@ -40,7 +40,7 @@ def global_threshold_prune(params,old_mask,plan,fraction=0.1):
     threshold = jnp.sort(jnp.abs(p))[num_prune]
 
     def to_mask(param,old_mask,plan_item):
-        if plan_item[0] == 1:
+        if plan_item == 1:
             return None
         return jnp.flatnonzero(jnp.abs(param) > threshold)
 

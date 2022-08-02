@@ -57,7 +57,7 @@ def create_plan(params,rules,default_value=0):
 
 def flag_condition(flag_value):
     def check(input):
-        return input[1] == flag_value
+        return input == flag_value
     return check
 
 
@@ -73,8 +73,8 @@ def get_where(plan,tree,cond=flag_condition(1)):
 
 def apply_where(plan,f,*trees,cond=flag_condition(1)):
 
-    def apply_where_helper(plan,*leaves):
-        if not cond(plan):
+    def apply_where_helper(plan_item,*leaves):
+        if not cond(plan_item):
             return None
         return f(*leaves)
 
