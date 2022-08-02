@@ -19,6 +19,7 @@ def get_leaf_addresses(tree):
 
 # rule = [condition,action]
 
+
 import re
 class Rule(object):
     def __init__(self, condition, action):
@@ -36,7 +37,7 @@ class Rule(object):
         if callable(self.action):
             return self.action(value)
         else:
-            return self.action
+            return self.action           
 
 
 def create_plan(params,rules,default_value=0):
@@ -53,19 +54,36 @@ def create_plan(params,rules,default_value=0):
     return jax.tree_map(apply_rules,addresses)
 
 
-# def apply_included(f,plan,*trees):
 
-#   def if_included(plan,*params):
-#     if plan == PlanFlag.EXCLUDED:
-#       return None
-#     return f(*params)
+def flag_condition(flag_value):
+    def check(input):
+        return input[1] == flag_value
+    return check
 
-#   return jax.tree_map(if_included,plan,*trees)
+
+def get_where(plan,tree,cond=flag_condition(1)):
+    
+    def get_where_helper(plan,leaf):
+        if not cond(plan):
+            return None
+        return leaf
+
+    return jax.tree_map(get_where_helper,plan,tree)
+
+
+def apply_where(f,plan,*trees,cond=flag_condition(1)):
+
+    def apply_where_helper(plan,*leaves):
+        if not cond(plan):
+            return None
+        return f(*leaves)
+
+    return jax.tree_map(apply_where_helper,plan,*trees)
 
   
-def tighten_mask(mask,plan):
-    return jax.tree_map(lambda m, plan_item: [] if plan_item == 0 else m, mask, plan)
+def tighten_mask(mask,plan,cond=flag_condition(0)):
+    return jax.tree_map(lambda m, plan_item: [] if cond(plan_item) else m, mask, plan)
 
 
-def loosen_mask(mask,plan):
-    return jax.tree_map(lambda m, plan_item: None if plan_item == 1 else m, mask, plan)
+def loosen_mask(mask,plan,cond=flag_condition(1)):
+    return jax.tree_map(lambda m, plan_item: None if cond(plan_item) else m, mask, plan)
