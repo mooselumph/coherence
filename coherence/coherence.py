@@ -53,16 +53,15 @@ def get_coherence(pt_grads):
     return c
 
 
-from .pruning.pruning import extract_masked_params
-from functools import partial
+from .pruning import get_unmasked
 
 def subnetwork_coherence(c,mask):
 
-    extracted = jax.tree_map(extract_masked_params,c,mask)
+    extracted = get_unmasked(c,mask)
     c_flat = ravel_pytree(extracted)
     c_in = jnp.mean(c_flat)
 
-    extracted = jax.tree_map(partial(extract_masked_params,flipped=True),c,mask)
+    extracted = get_unmasked(c,mask,flipped=True)
     c_flat = ravel_pytree(extracted)
     c_out = jnp.mean(c_flat)
 
