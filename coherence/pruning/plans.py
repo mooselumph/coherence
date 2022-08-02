@@ -71,7 +71,7 @@ def get_where(plan,tree,cond=flag_condition(1)):
     return jax.tree_map(get_where_helper,plan,tree)
 
 
-def apply_where(f,plan,*trees,cond=flag_condition(1)):
+def apply_where(plan,f,*trees,cond=flag_condition(1)):
 
     def apply_where_helper(plan,*leaves):
         if not cond(plan):
