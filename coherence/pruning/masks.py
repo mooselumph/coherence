@@ -44,4 +44,4 @@ def get_unmasked_leaf(param, mask, flipped=False):
 
 
 def get_unmasked(params, mask, flipped=False):
-    return jax.tree_map(partial(apply_mask_leaf,flipped=flipped),params,mask)
+    return jax.tree_map(partial(get_unmasked_leaf,flipped=flipped),params,mask)
