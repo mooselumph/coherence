@@ -5,14 +5,22 @@ import numpy as np
 
 from functools import partial
 
+from enum import Enum
+class MaskFlag(Enum):
+    ALL = 1
+
+
+def is_flag(mask_item,flag):
+    return type(mask_item) == MaskFlag and mask_item == flag
+
 
 def init_mask(params):
-    return jax.tree_map(lambda _: None,params)
+    return jax.tree_map(lambda _: MaskFlag.ALL,params)
 
 
 def apply_mask_leaf(param,mask):
 
-        if mask == None:
+        if is_flag(mask,MaskFlag.ALL):
             return param
 
         t = param[mask]
@@ -28,13 +36,13 @@ def get_unmasked_leaf(param, mask, flipped=False):
 
     # Not flipped
     if not flipped:
-        if mask is None:
+        if is_flag(mask,MaskFlag.ALL):
             return jnp.ravel(param)
         else:
             return param[mask]
 
     # Flipped
-    if mask is None:
+    if is_flag(mask,MaskFlag.ALL):
         return []
     else:
         bool_mask = np.ones_like(param,dtype=bool)

@@ -1,9 +1,7 @@
 import jax
+import jax.numpy as jnp
 
-from enum import Enum
-class PlanFlag(Enum):
-    EXCLUDED = 1
-
+from . import MaskFlag
 
 def get_leaf_addresses(tree):
 
@@ -82,8 +80,8 @@ def apply_where(plan,f,*trees,cond=flag_condition(1)):
 
   
 def tighten_mask(mask,plan,cond=flag_condition(0)):
-    return jax.tree_map(lambda m, plan_item: [] if cond(plan_item) else m, mask, plan)
+    return jax.tree_map(lambda m, plan_item: jnp.array([]) if cond(plan_item) else m, mask, plan)
 
 
 def loosen_mask(mask,plan,cond=flag_condition(1)):
-    return jax.tree_map(lambda m, plan_item: None if cond(plan_item) else m, mask, plan)
+    return jax.tree_map(lambda m, plan_item: MaskFlag.ALL if cond(plan_item) else m, mask, plan)

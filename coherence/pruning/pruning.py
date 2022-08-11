@@ -4,7 +4,7 @@ import numpy as np
 
 from ..utils import ravel_pytree
 
-from . import get_unmasked_leaf, get_unmasked
+from . import get_unmasked_leaf, get_unmasked, MaskFlag
 
 
 def layerwise_threshold_prune(params,old_mask,plan):
@@ -13,7 +13,7 @@ def layerwise_threshold_prune(params,old_mask,plan):
     def get_mask(param, mask, plan_item):
 
         if plan_item == 1:
-            return None
+            return MaskFlag.ALL
 
         p = get_unmasked_leaf(param,mask)
 
@@ -41,7 +41,7 @@ def global_threshold_prune(params,old_mask,plan,fraction=0.1):
 
     def to_mask(param,old_mask,plan_item):
         if plan_item == 1:
-            return None
+            return MaskFlag.ALL
         return jnp.flatnonzero(jnp.abs(param) > threshold)
 
     return jax.tree_map(to_mask,params,old_mask,plan)
