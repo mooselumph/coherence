@@ -52,7 +52,6 @@ def create_plan(params,rules,default_value=0):
     return jax.tree_map(apply_rules,addresses)
 
 
-
 def flag_condition(flag_value):
     def check(input):
         return input == flag_value
@@ -80,8 +79,27 @@ def apply_where(plan,f,*trees,cond=flag_condition(1)):
 
   
 def tighten_mask(mask,plan,cond=flag_condition(0)):
-    return jax.tree_map(lambda m, plan_item: jnp.array([]) if cond(plan_item) else m, mask, plan)
+    return jax.tree_map(lambda m, plan_item: jnp.array([],dtype=int) if cond(plan_item) else m, mask, plan)
 
 
 def loosen_mask(mask,plan,cond=flag_condition(1)):
     return jax.tree_map(lambda m, plan_item: MaskFlag.ALL if cond(plan_item) else m, mask, plan)
+
+
+class PlanCondition():
+
+    def __init__(self,plan,condition=flag_condition(1)):
+        self.plan = plan
+        self.condition = condition
+
+    def get_where(self, tree):
+        return get_where(self.plan,tree,self.condition)
+
+    def apply_where(self,f,*trees):
+        return apply_where(self.plan,f,*trees,cond=self.condition)
+
+    def tighten_mask(self,mask):
+        return tighten_mask(mask,self.plan,cond=self.condition)
+
+    def loosen_mask(self,mask):
+        return loosen_mask(mask,self.plan,cond=self.condition)
