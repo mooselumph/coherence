@@ -23,9 +23,10 @@ def apply_mask_leaf(param,mask):
         if is_flag(mask,MaskFlag.ALL):
             return param
 
-        t = param[mask]
+        mask_unflat = jnp.unravel_index(mask,param.shape)
+        t = param[mask_unflat]
         param = param*0
-        param = param.at[mask].set(t)
+        param = param.at[mask_unflat].set(t)
         return param
 
 def apply_mask(params,mask):
